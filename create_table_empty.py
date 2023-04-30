@@ -15,6 +15,11 @@ linhas = ['erros', 'avisos']
 dados = pd.DataFrame(np.nan, index=linhas, columns=colunas)
 
 
-today=datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-file_name = f"relatorio_{today}.csv"
-dados.to_csv(file_name, index=False)
+def nivelAcessibilidade(valor):
+    cor = 'green' if valor == 100 else 'yellow'
+    return f'color'
+
+
+is_now = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+file_name = f"relatorio_{is_now}.csv"
+dados.to_csv(file_name)

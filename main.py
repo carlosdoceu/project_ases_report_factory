@@ -11,21 +11,23 @@ import time
 import csv
 
 options = webdriver.ChromeOptions()
-options.headless = False
+options.headless = True
 navegador = webdriver.Chrome(chrome_options=options)
-navegador.get("https://asesweb.governoeletronico.gov.br")
+
 
 # este vetor ira conter todos as paginas na qual servira para o relatorio
-urls = ['www.tjro.jus.br/', 'https://www.tjro.jus.br/resp-institucional/resp-conheca-pj']
+urls = ['www.tjro.jus.br/', 'www.tjro.jus.br/resp-institucional/resp-conheca-pj','www.tjro.jus.br/resp-institucional/resp-legislacao-normas#?pparentid=1&menuType=legislacao-e-normas',"https://www.tjro.jus.br/resp-institucional/resp-cons-magistratura"]
 
 templist = []
 
 # for vai realizar navega e identifica tags
 for i, url in enumerate(urls):
     print(f"Processando URL {i + 1}/{len(urls)}: {url}")
+    navegador.get("https://asesweb.governoeletronico.gov.br")
+    navegador.find_element(By.ID, 'url').clear()
     navegador.find_element(By.ID, 'url').send_keys(url)
     navegador.find_element(By.XPATH, '//*[@id="input_tab_1"]').click()
-    # time.sleep(10)
+    # time.sleep(5)
 
     rows = len(navegador.find_elements(By.XPATH, '/html/body/section/div/div[1]/div[4]/div[2]/div[3]/table/tbody/tr'))
     cols = len(
@@ -43,8 +45,14 @@ for i, url in enumerate(urls):
     for i in range(1, rows + 1):
         d = []
         for j in range(1, cols + 1):
-            d.append(navegador.find_element(By.XPATH,
-                                            "//*[@id='tabelaErros']/tbody/tr[" + str(i) + "]/td[" + str(j) + "]").text)
+            d.append(navegador.find_element(By.XPATH,"//*[@id='tabelaErros']/tbody/tr[" + str(i) + "]/td[" + str(j) + "]").text)
         resultTab.append({"secao": d[0], "erros": d[1], "avisos": d[2]})
     print(resultTab)
+    templist.append(resultTab)
 
+
+
+df =pd.DataFrame(templist)
+df.to_csv("tabela.csv", index=False)
+
+print("Terminouuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu!")
