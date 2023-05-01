@@ -1,4 +1,3 @@
-from lib2to3.pgen2 import driver
 
 import numpy as np
 import requests
@@ -10,13 +9,20 @@ from bs4 import BeautifulSoup
 import time
 import csv
 
+import create_table_matriz
+from create_table_matriz import createTableEmpty
+
 options = webdriver.ChromeOptions()
-options.headless = True
+options.headless = False
 navegador = webdriver.Chrome(chrome_options=options)
 
 
+matrizvazia = create_table_matriz.createTableEmpty(create_table_matriz.matriz)
+df = pd.DataFrame(createTableEmpty(matrizvazia))
+df.to_csv("testedematriz.csv", index=False, header=False)
+
 # este vetor ira conter todos as paginas na qual servira para o relatorio
-urls = ['www.tjro.jus.br/', 'www.tjro.jus.br/resp-institucional/resp-conheca-pj','www.tjro.jus.br/resp-institucional/resp-legislacao-normas#?pparentid=1&menuType=legislacao-e-normas',"https://www.tjro.jus.br/resp-institucional/resp-cons-magistratura"]
+urls = ['https://www.tjro.jus.br/', 'https://www.tjro.jus.br/resp-institucional/resp-conheca-pj','https://www.tjro.jus.br/resp-institucional/resp-legislacao-normas#?pparentid=1&menuType=legislacao-e-normas',"https://www.tjro.jus.br/resp-institucional/resp-cons-magistratura"]
 
 templist = []
 
@@ -51,8 +57,11 @@ for i, url in enumerate(urls):
     templist.append(resultTab)
 
 
+# dfMatriz= pd.DataFrame(matrizVazia)
 
 df =pd.DataFrame(templist)
+
+# dfMatriz.to_csv("matrizVazia", index=False, header=False)
 df.to_csv("tabela.csv", index=False)
 
 print("Terminouuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu!")
