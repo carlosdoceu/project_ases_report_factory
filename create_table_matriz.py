@@ -7,8 +7,8 @@ from datetime import datetime
 #######################################################
 
 # Define os vetores colunas e linhas
-colunas = ['link', 'apuracao', 'porcentagem', 'marcacao', 'comportamento', 'conteudo_informacao', 'apresentacao_design',
-           'multimidia', 'formulario', 'total']
+colunas = ['tipo','link', 'marcacao', 'comportamento', 'conteudo_informacao', 'apresentacao_design',
+           'multimidia', 'formulario', 'total', 'porcentagem', 'apuracao']
 linhas = ['erros', 'avisos']
 
 # Junta vetores e cria matriz
@@ -25,24 +25,21 @@ def createTableEmpty(matriz):
 
 
 
-
-
-df = pd.DataFrame(createTableEmpty(matriz))
-
-# Define um dicionário com os estilos
-styles = [
-    dict(selector="th", props=[("font-size", "14pt"), ("background-color", "gray"), ("color", "white")]), # cabeçalho
-    dict(selector="td", props=[("font-size", "12pt")]), # células
-]
-
-# Aplica os estilos à tabela
-styled_table = df.style.set_table_styles(styles)
-
-
-
-
-
-is_now = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-file_name = f"relatorio_{is_now}.csv"
-
-df.to_csv(file_name, index=False, header=False)
+#
+#
+# df = pd.DataFrame(createTableEmpty(matriz))
+#
+# # Define estilos a tablea
+#
+#
+# # # Aplica os estilos à tabela
+# # styled_table = df.style.set_table_styles(styles)
+# #
+# #
+# #
+# #
+# #
+# # is_now = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+# # file_name = f"relatorio_{is_now}.csv"
+# #
+# # df.to_csv(file_name, index=False, header=False)
