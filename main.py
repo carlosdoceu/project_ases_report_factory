@@ -7,80 +7,76 @@ import pandas as pd
 from bs4 import BeautifulSoup
 import time
 import csv
-
+from datetime import datetime
 import create_table_matriz
 from create_table_matriz import createTableEmpty
 
 options = webdriver.ChromeOptions()
-options.headless = True
+options.headless = False
 navegador = webdriver.Chrome(chrome_options=options)
 
-tabelaVazia = create_table_matriz.createTableEmpty(create_table_matriz.matriz)
+tabelasProntas = []
+tabelaUnica = create_table_matriz.createTableEmpty(create_table_matriz.matriz)
 
 # este vetor ira conter todos as paginas na qual servira para o relatorio
-urls = ['https://www.google.com/']
+urls = ['https://www.google.com/', 'www.tjro.jus.br']
 
-templist = []
 
-# for vai realizar navega e identifica tags
-for i, url in enumerate(urls):
-    print(f"Analisando Páginas  {i + 1}/{len(urls)}: {url}")
+def abreNavegador():
     navegador.get("https://asesweb.governoeletronico.gov.br")
     navegador.find_element(By.ID, 'url').clear()
     navegador.find_element(By.ID, 'url').send_keys(url)
     navegador.find_element(By.XPATH, '//*[@id="input_tab_1"]').click()
+
+
+# for vai iniciar navegacao e identifica xpath e insere em vetores
+for i, url in enumerate(urls):
+    print(f"Analisando Páginas  {i + 1}/{len(urls)}: {url}")
+    abreNavegador()
     # time.sleep(5)
 
     rows = len(navegador.find_elements(By.XPATH, '/html/body/section/div/div[1]/div[4]/div[2]/div[3]/table/tbody/tr'))
-    cols = len(navegador.find_elements(By.XPATH, '/html/body/section/div/div[1]/div[4]/div[2]/div[3]/table/tbody/tr[1]/td'))
+    cols = len(
+        navegador.find_elements(By.XPATH, '/html/body/section/div/div[1]/div[4]/div[2]/div[3]/table/tbody/tr[1]/td'))
 
-    row_total = len(navegador.find_elements(By.XPATH, '/html/body/section/div/div[1]/div[4]/div[2]/div[3]/table/tfoot/tr'))
-    cols_total = len(navegador.find_elements(By.XPATH, '/html/body/section/div/div[1]/div[4]/div[2]/div[3]/table/tfoot/tr/td'))
-    percentage = len(navegador.find_elements(By.XPATH, '/html/body/section/div/div[1]/div[4]/div[2]/div[1]/div/div/span'))
-
-
-
+    veterros = []
+    vetavisos = []
     resultTab = []
     for i in range(1, rows + 1):
-        d = []
+
         for j in range(1, cols + 1):
-            d.append(navegador.find_element(By.XPATH,"//*[@id='tabelaErros']/tbody/tr[" + str(i) + "]/td[" + str(j) + "]").text)
-        resultTab.append({"erros": d[1], "avisos": d[2]})
+            element = navegador.find_element(By.XPATH,
+                                             "//*[@id='tabelaErros']/tbody/tr[" + str(i) + "]/td[" + str(j) + "]")
+            if j == 2:
+                veterros.append(element.text)
+            elif j == 3:
+                vetavisos.append(element.text)
+    # resultTab.append({"erros": veterros, "avisos": vetavisos})
+
+            tabelaUnica[1][8] = navegador.find_element(By.XPATH, "//*[@id='total']/td[2]").text
+            tabelaUnica[2][8] = navegador.find_element(By.XPATH, "//*[@id='total']/td[3]").text
+            tabelaUnica[1][9] = navegador.find_element(By.XPATH, "//*[@id='webaxscore']/span").text
+            tabelaUnica[1][10] = datetime.now().strftime("%H:%M:%S %d/%m/%Y")
+
+    tabelasProntas.append(tabelaUnica)
 
 
-    resultTotal = []
-    for i in range(1, row_total + 1):
-        d = []
-        for j in range(1, cols_total + 1):
-            d.append(navegador.find_element(By.XPATH,
-                                            "//*[@id='tabelaErros']/tfoot/tr[" + str(i) + "]/td[" + str(j) + "]").text)
-        resultTotal.append({d[0] + " erros": d[1], "aviso": d[2]})
 
-
-    percent = []
-    for percent_data in range(1, percentage + 1):
-        percent.append(navegador.find_element(By.XPATH, "//*[@id='webaxscore']/span[" + str(percent_data) + "]").text)
-        percent[0]
 
 
     print(resultTab)
-    print(resultTotal)
-    print(percent)
-
-    templist.append(resultTab)
 
 
-for i in range(len(resultTab)):
-    print(resultTab[i])
+    # tabelasProntas.append(resultTab)
 
 
-tabelaVazia[1][9] = percent[0]
+for i in veterros:
+    print("erros:", i)
+for j in vetavisos:
+    print("avisos:", j)
 
-df = pd.DataFrame(templist)
-
-# esta criando a tabela vazia
-testedf = pd.DataFrame(createTableEmpty(tabelaVazia))
-testedf.to_csv("teste.csv", index=False, header=False)
-
-# contem os dados do selenium
-df.to_csv("tabela.csv", index=False, header=False)
+for i,tabela in enumerate(tabelasProntas):
+    print(f"Tabela {i+1}:")
+    print(pd.DataFrame(tabela))
+tabelaCompleta = pd.concat(tabelasProntas, axis=0)
+tabelaCompleta.to_csv("relatorio.csv")
