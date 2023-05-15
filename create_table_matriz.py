@@ -4,8 +4,8 @@ from datetime import datetime
 
 
 
-colunas = ['titulo', 'link', 'marcacao', 'comportamento', 'conteudo_informacao', 'apresentacao_design',
-           'multimidia', 'formulario', 'total', 'porcentagem', 'apuracao']
+colunas = ['titulo', 'link', 'marcação', 'comportamento', 'conteudo_informação', 'apresentacao_design',
+           'multimidia', 'formulario', 'total', 'porcentagem', 'apuração']
 linhas = ['erros', 'avisos']
 
 matriz = np.zeros((len(linhas) + 1, len(colunas)), dtype=object)
@@ -31,8 +31,7 @@ matriz = createTableEmpty(matriz)
 # #dado preenchido
 # matriz[0][0]="banana"
 #
-# #mesca de celula
-# sheet.merge._cells()
+#
 #
 #
 #
@@ -41,4 +40,4 @@ matriz = createTableEmpty(matriz)
 # is_now = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 # file_name = f"relatorio_{is_now}.csv"
 #
-# df.to_csv(file_name, index=False, header=False)
+# df.to_csv(file_name, index=False, header=False, encoding='utf-8')

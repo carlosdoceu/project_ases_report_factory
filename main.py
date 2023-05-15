@@ -3,17 +3,46 @@ from selenium.webdriver.common.by import By
 import pandas as pd
 from datetime import datetime
 import create_table_matriz
-from create_table_matriz import createTableEmpty
-
+from pathlib import Path
 options = webdriver.ChromeOptions()
-options.headless = False
+options.headless = True
 navegador = webdriver.Chrome(chrome_options=options)
 
 
 tabelaUnica = create_table_matriz.createTableEmpty(create_table_matriz.matriz)
 todasTabelas=[]
 # este vetor ira conter todos as paginas na qual servira para o relatorio
-urls = ['https://www.google.com/','https://www.tjro.jus.br/','https://www.tjro.jus.br/resp-institucional/resp-conheca-pj']
+urls = ['https://www.tjro.jus.br/',
+        'https://www.tjro.jus.br/resp-institucional/resp-conheca-pj',
+        'https://www.tjro.jus.br/resp-institucional/resp-cons-magistratura',
+        'https://www.tjro.jus.br/resp-institucional/nucleo-de-cooperacao-judiciaria',
+        'https://www.tjro.jus.br/resp-institucional/resp-secretarias',
+        'https://www.tjro.jus.br/resp-transparencia-estatistica',
+        'https://www.tjro.jus.br/resp-institucional/estrutura',
+        'https://www.tjro.jus.br/resp-institucional/processos-organizacionais',
+        'https://www.tjro.jus.br/resp-sistemas',
+        'https://www.tjro.jus.br/resp-cidadania',
+        'https://www.tjro.jus.br/resp-comarcas',
+        'https://www.tjro.jus.br/mn-sist-boleto-bancario',
+        'https://www.tjro.jus.br/resp-concursos',
+        'https://www.tjro.jus.br/mn-sist-ouvidoria#?pparentid=1&menuType=ouvidoria',
+        'https://www.tjro.jus.br/mn-sist-sei',
+        'https://www.tjro.jus.br/nupemec',
+        'https://www.tjro.jus.br/resp-nugep',
+        'https://www.tjro.jus.br/inicio-pje',
+        'https://www.tjro.jus.br/resp-ceajus',
+        'https://www.tjro.jus.br/resp-cees',
+        'https://www.tjro.jus.br/mn-feriados-locais',
+        'https://www.tjro.jus.br/resp-gmf',
+        'https://www.tjro.jus.br/resp-transmissao-sessoes',
+        'https://www.tjro.jus.br/resp-tutoriais-sessoes',
+        'https://www.tjro.jus.br/stic-cpeadvogados',
+        'https://www.tjro.jus.br/stic-glossario',
+        'https://www.tjro.jus.br/resp-transp-nucleo',
+        'https://www.tjro.jus.br/resp-licitacoes-tjro'
+        'https://www.tjro.jus.br/gestao-documental',
+        'https://www.tjro.jus.br/s-t-i-c'
+        ]
 def abreNavegador():
     navegador.get("https://asesweb.governoeletronico.gov.br")
     navegador.find_element(By.ID, 'url').clear()
@@ -61,7 +90,7 @@ for i, url in enumerate(urls):
             # porcentagem
             tabelaUnica[1][9] = navegador.find_element(By.XPATH, "//*[@id='webaxscore']/span").text
             # apuração
-            tabelaUnica[1][10] = datetime.now().strftime("%H:%M:%S %d/%m/%Y")
+            tabelaUnica[1][10] = datetime.now().strftime("%d/%m/%Y")
     #fim da coleta
     #adiciona valores "ERROS" e "AVISOS" nas tabelas
     for i in range(len(veterros)):
@@ -77,5 +106,9 @@ for i, url in enumerate(urls):
 
 tabelaFinal = pd.concat(todasTabelas, ignore_index=True).reset_index(drop=True)
 is_now = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-file_name = f"relatorio_{is_now}.csv"
-tabelaFinal.to_csv(file_name, index=False,header=False)
+
+output_dir = Path('PastaRelatorio')
+output_dir.mkdir(parents=True, exist_ok=True)
+
+file_name = f"relatorio__{is_now}.csv"
+tabelaFinal.to_csv(output_dir/file_name, index=False,header=False,encoding='utf-8')
